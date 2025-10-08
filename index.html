@@ -12,15 +12,15 @@
         }
 
         :root {
-            --primary-color: #00d4ff;
-            --secondary-color: #1a1a2e;
-            --dark-bg: #16213e;
-            --card-bg: #1e293b;
-            --text-light: #f1f5f9;
-            --text-muted: #94a3b8;
-            --accent: #3b82f6;
-            --success: #22c55e;
-            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --primary-color: #00e5ff;
+            --secondary-color: #1f2937;
+            --dark-bg: #1e3a5f;
+            --card-bg: #2d3748;
+            --text-light: #ffffff;
+            --text-muted: #cbd5e1;
+            --accent: #60a5fa;
+            --success: #34d399;
+            --gradient: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
         }
 
         body {
@@ -42,12 +42,12 @@
             width: 100%;
             height: 100%;
             background: linear-gradient(-45deg, 
-                #0a0a0a, 
-                #1a0a2e, 
-                #0f1419, 
-                #16213e,
-                #0a1628,
-                #1e1b4b);
+                #1a1a2e, 
+                #2d1b4e, 
+                #1e2a3a, 
+                #1e3a5f,
+                #1a2c48,
+                #2d2b5b);
             background-size: 400% 400%;
             animation: gradientShift 12s ease infinite;
             z-index: -2;
@@ -62,10 +62,10 @@
             width: 100%;
             height: 100%;
             background: 
-                radial-gradient(circle at 20% 30%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 80% 70%, rgba(236, 72, 153, 0.12) 0%, transparent 50%),
-                radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 90% 20%, rgba(34, 211, 238, 0.08) 0%, transparent 50%);
+                radial-gradient(circle at 20% 30%, rgba(139, 92, 246, 0.25) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(236, 72, 153, 0.20) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.18) 0%, transparent 50%),
+                radial-gradient(circle at 90% 20%, rgba(34, 211, 238, 0.15) 0%, transparent 50%);
             animation: rgbPulse 8s ease-in-out infinite;
             z-index: -1;
             pointer-events: none;
@@ -619,7 +619,8 @@
         }
 
         .option-group select,
-        .option-group input {
+        .option-group input,
+        .option-group textarea {
             background: var(--dark-bg);
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 8px;
@@ -627,10 +628,18 @@
             color: var(--text-light);
             font-size: 0.95rem;
             transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .option-group textarea {
+            resize: vertical;
+            min-height: 80px;
+            max-height: 200px;
         }
 
         .option-group select:focus,
-        .option-group input:focus {
+        .option-group input:focus,
+        .option-group textarea:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
@@ -1391,6 +1400,17 @@
                         </div>
                     </div>
 
+                    <!-- Ghi chú từ shop cho khách hàng -->
+                    <div id="productNoteContainer" style="display: none; margin-bottom: 1.5rem; padding: 1rem; background: rgba(255, 193, 7, 0.1); border-left: 4px solid #ffc107; border-radius: 8px;">
+                        <div style="display: flex; align-items: flex-start; gap: 0.5rem;">
+                            <span style="font-size: 1.2rem;">💡</span>
+                            <div>
+                                <strong style="color: #ffc107; font-size: 0.95rem;">Lưu ý:</strong>
+                                <p id="productNoteText" style="margin: 0.5rem 0 0 0; color: var(--text-light); font-size: 0.9rem; line-height: 1.6;"></p>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="price-display">
                         <div class="price" id="totalPrice">180,000 VNĐ</div>
                     </div>
@@ -1535,47 +1555,47 @@
                 name: "Netflix Premium",
                 icon: "icons/netflix.png",
                 description: "Tài khoản Netflix Premium với chất lượng 4K UHD, xem trên 4 thiết bị cùng lúc. Thư viện phim phong phú.",
+                note: "Tài khoản dùng chung, không đổi thông tin. Bảo hành 1 đổi 1 trong thời gian sử dụng. ",
                 prices: {
-                    "30_nobh": { days: 30, price: 150000, label: "30 ngày (Không bảo hành)", warranty: false },
-                    "30_bh": { days: 30, price: 180000, label: "30 ngày 🛡️ (Có bảo hành)", warranty: true },
-                    "90_nobh": { days: 90, price: 400000, label: "90 ngày (Không bảo hành)", warranty: false },
-                    "90_bh": { days: 90, price: 480000, label: "90 ngày 🛡️ (Có bảo hành)", warranty: true },
-                    "365_nobh": { days: 365, price: 1500000, label: "1 năm (Không bảo hành)", warranty: false },
-                    "365_bh": { days: 365, price: 1800000, label: "1 năm 🛡️ (Có bảo hành)", warranty: true }
+                    "30_bh": { days: 30, price: 70000, label: "1 tháng", warranty: true },
+                    "90_bh": { days: 90, price: 200000, label: "3 tháng", warranty: true },
+                    "180_bh": { days: 180, price: 350000, label: "6 tháng", warranty: true },
+                    "365_bh": { days: 365, price: 600000, label: "1 năm", warranty: true }
                 },
                 features: ["Chất lượng 4K UHD", "4 màn hình cùng lúc", "Tải phim offline", "Không quảng cáo"],
-                stock: 0  // Số lượng còn lại
+                stock: 12  // Số lượng còn lại
             },
             "spotify": {
                 name: "Spotify Premium",
                 icon: "icons/spotify.png",
                 description: "Nghe nhạc không giới hạn với chất lượng cao, tải nhạc offline và không có quảng cáo.",
+                note: "Tài khoản chính chủ. Bảo hành trong suốt thời gian sử dụng.",
                 prices: {
-                    "30_nobh": { days: 30, price: 0, label: "30 ngày (Không bảo hành)", warranty: false },
-                    "30_bh": { days: 30, price: 0, label: "30 ngày 🛡️ (Có bảo hành)", warranty: true },
-                    "365_nobh": { days: 365, price: 0, label: "1 năm (Không bảo hành)", warranty: false },
-                    "365_bh": { days: 365, price: 0, label: "1 năm 🛡️ (Có bảo hành)", warranty: true }
+                    "120_bh": { days: 120, price: 80000, label: "4 tháng", warranty: true },
+                    "180_bh": { days: 180, price: 200000, label: "6 tháng", warranty: true },
+                    "365_bh": { days: 365, price: 280000, label: "1 năm", warranty: true }
                 },
-                features: ["Chất lượng 320kbps", "Tải nhạc offline", "Không quảng cáo", "Bỏ qua bài hát"],
-                stock: 0  // Số lượng còn lại
+                features: ["Chất lượng âm thanh cao", "Tải nhạc offline", "Không quảng cáo", "Bỏ qua bài hát"],
+                stock: 16  // Số lượng còn lại
             },
             "youtube": {
                 name: "YouTube Premium",
                 icon: "icons/youtube.png",
-                description: "Xem video YouTube không quảng cáo, tải video offline và nghe nhạc YouTube Music.",
+                description: "Không quảng cáo, nghe trong nền, tải video offline và YouTube Music.",
+                note: "Tài khoản chính chủ add family. Bảo hành trong suốt thời gian sử dụng..",
                 prices: {
-                    "30_nobh": { days: 30, price: 0, label: "30 ngày (Không bảo hành)", warranty: false },
-                    "30_bh": { days: 30, price: 0, label: "30 ngày 🛡️ (Có bảo hành)", warranty: true },
-                    "365_nobh": { days: 365, price: 0, label: "1 năm (Không bảo hành)", warranty: false },
-                    "365_bh": { days: 365, price: 0, label: "1 năm 🛡️ (Có bảo hành)", warranty: true }
+                    "90_bh": { days: 90, price: 80000, label: "3 tháng", warranty: true },
+                    "180_bh": { days: 180, price: 150000, label: "6 tháng", warranty: true },
+                    "365_bh": { days: 365, price: 250000, label: "1 năm", warranty: true }
                 },
                 features: ["Không quảng cáo", "Tải video offline", "YouTube Music", "Phát nền"],
-                stock: 0  // Hết hàng
+                stock: 27  // Số lượng còn lại
             },
             "Google AI Pro": {
                 name: "Google AI Pro",
                 icon: "icons/google-one.png",
                 description: "Thiết kế chuyên nghiệp với hàng triệu template, ảnh stock và công cụ AI mạnh mẽ.",
+                note: "Tài khoản riêng, full quyền sử dụng. Bảo hành 1 đổi 1 nếu lỗi trong thời gian sử dụng.",
                 prices: {
                     "30_nobh": { days: 30, price: 10000, label: "30 ngày (Không bảo hành)", warranty: false },
                     "30_bh": { days: 30, price: 15000, label: "30 ngày 🛡️ (Có bảo hành)", warranty: true },
@@ -1586,6 +1606,30 @@
                 },
                 features: ["Gemini Pro", "2TB Drive", "NotebookLm Pro", "Whisk Animate Biến hình ảnh thành video bằng Veo"],
                 stock: 20  // Số lượng còn lại
+            },
+            "ChatGPT Plus": {
+                name: "ChatGPT Plus",
+                icon: "icons/chatgpt.png",
+                description: "ChatGPT với model cao cấp, gửi file và ảnh không giới hạn.",
+                note: "Tài khoản riêng hoặc được cấp. Bảo hành 1 đổi 1 nếu lỗi trong thời gian sử dụng.",
+                prices: {
+
+                    "90_bh": { days: 90, price: 300000, label: "3 tháng, Chính chủ", warranty: true },
+                    "90_nobh": { days: 90, price: 200000, label: "90 ngày, Acc cấp", warranty: false },
+                },
+                features: ["Model GPT-5", "Tạo hình ảnh mở rộng và nhanh hơn", "Mở rộng chế độ nghiên cứu chuyên sâu và tác nhân", "Tạo video Sora", "Codex"],
+                stock: 20  // Số lượng còn lại
+            },
+            "Canva Pro": {
+                name: "Canva Pro",
+                icon: "icons/canva.png",
+                description: "Canva Pro tài khoản chính chủ.",
+                note: "Tài khoản chính chủ. Bảo hành 1 đổi 1 nếu lỗi trong thời gian sử dụng.",
+                prices: {
+                    "1080_bh": { days: 1080, price: 400000, label: "3 năm, Chính chủ", warranty: true },
+                },
+                features: ["Visual Suite 2.0", "Magic Studio", "Canva AI", "Truy cập các bộ sưu tập chất lượng cao"],
+                stock: 25  // Số lượng còn lại
             }
         };
 
@@ -1723,6 +1767,16 @@
             // Cập nhật tóm tắt đơn hàng
             const summaryProductSpan = document.querySelector('.summary-item span:nth-child(2)');
             if (summaryProductSpan) summaryProductSpan.textContent = product.name;
+            
+            // Hiển thị ghi chú từ shop nếu có
+            const noteContainer = document.getElementById('productNoteContainer');
+            const noteText = document.getElementById('productNoteText');
+            if (product.note && product.note.trim() !== '') {
+                noteText.textContent = product.note;
+                noteContainer.style.display = 'block';
+            } else {
+                noteContainer.style.display = 'none';
+            }
             
             // Vô hiệu hóa input số lượng nếu hết hàng
             const quantityInput = document.getElementById('quantity');
