@@ -1452,10 +1452,10 @@
                     
                     <div class="contact-buttons">
                         <a href="#" class="contact-btn zalo-btn" id="zaloBtn">
-                            <img src="icons/zalo.png" alt="Zalo" style="width: 24px; height: 24px; margin-right: 8px; vertical-align: middle;"> Zalo
+                            <img src="icons/zalo.png" alt="Zalo" style="width: 24px; height: 24px;"> Zalo
                         </a>
                         <a href="#" class="contact-btn messenger-btn" id="messengerBtn">
-                            <img src="icons/messenger.png" alt="Messenger" style="width: 24px; height: 24px; margin-right: 8px; vertical-align: middle;"> Messenger
+                            <img src="icons/messenger.png" alt="Messenger" style="width: 24px; height: 24px;"> Messenger
                         </a>
                     </div>
                     
@@ -1516,10 +1516,10 @@
                     <div class="contact-section-title">Liên Hệ Hỗ Trợ</div>
                     <div class="contact-buttons">
                         <a href="#" class="contact-btn zalo-btn" id="modalZaloBtn">
-                            <img src="icons/zalo.png" alt="Zalo" style="width: 24px; height: 24px; margin-right: 8px; vertical-align: middle;"> Zalo
+                            <img src="icons/zalo.png" alt="Zalo" style="width: 24px; height: 24px;"> Zalo
                         </a>
                         <a href="#" class="contact-btn messenger-btn" id="modalMessengerBtn">
-                            <img src="icons/messenger.png" alt="Messenger" style="width: 24px; height: 24px; margin-right: 8px; vertical-align: middle;"> Messenger
+                            <img src="icons/messenger.png" alt="Messenger" style="width: 24px; height: 24px;"> Messenger
                         </a>
                     </div>
                     <div class="contact-warning">
@@ -1642,6 +1642,9 @@
 
         // Sản phẩm hiện tại được chọn
         let currentProduct = "netflix";
+        
+        // Lưu vị trí scroll của danh sách sản phẩm
+        let savedScrollPosition = 0;
 
         // ===========================================
         // FUNCTIONS - KHÔNG CHỈNH SỬA PHẦN NÀY
@@ -1700,6 +1703,9 @@
 
         // Chọn sản phẩm
         function selectProduct(productKey) {
+            // Lưu vị trí scroll hiện tại trước khi chuyển trang
+            savedScrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+            
             currentProduct = productKey;
             
             // Thêm vào lịch sử trình duyệt
@@ -1713,6 +1719,9 @@
             
             // Hiển thị sidebar khi chọn sản phẩm
             document.querySelector('.sidebar').classList.add('show');
+            
+            // Hiển thị từ đầu trang ngay lập tức
+            window.scrollTo(0, 0);
             
             updateProductDisplay();
         }
@@ -1729,6 +1738,11 @@
             
             // Ẩn sidebar khi quay lại danh sách
             document.querySelector('.sidebar').classList.remove('show');
+            
+            // Khôi phục vị trí scroll đã lưu
+            setTimeout(() => {
+                window.scrollTo(0, savedScrollPosition);
+            }, 0);
         }
 
         // Cập nhật thông tin sản phẩm hiện tại
