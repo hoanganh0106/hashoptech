@@ -1577,7 +1577,6 @@
                     "180_bh": { days: 180, price: 200000, label: "6 tháng", warranty: true },
                     "365_bh": { days: 365, price: 280000, label: "1 năm", warranty: true }
                 },
-                features: ["Chất lượng âm thanh cao", "Tải nhạc offline", "Không quảng cáo", "Bỏ qua bài hát"],
                 stock: 16  // Số lượng còn lại
             },
             "youtube": {
@@ -1628,7 +1627,7 @@
                 features: ["Visual Suite 2.0", "Magic Studio", "Canva AI", "Truy cập các bộ sưu tập chất lượng cao"],
                 stock: 25  // Số lượng còn lại
             },
-            "Office 365": {
+            "office365": {
                 name: "Office 365",
                 icon: "icons/office365.png",
                 description: "Office 365 tài khoản chính chủ.",
@@ -1759,13 +1758,17 @@
             
             // Cập nhật features
             const featuresContainer = document.getElementById('productFeatures');
-            if (product.features) {
+            if (product.features && product.features.length > 0) {
+                featuresContainer.style.display = 'grid';
                 featuresContainer.innerHTML = product.features.map(feature => `
                     <div class="feature-item">
                         <div class="feature-icon">✓</div>
                         <span>${feature}</span>
                     </div>
                 `).join('');
+            } else {
+                featuresContainer.style.display = 'none';
+                featuresContainer.innerHTML = '';
             }
             
             // Cập nhật dropdown thời hạn
