@@ -200,20 +200,25 @@
             margin: 0 0 1.5rem 0;
         }
         .search-input {
-            background: rgba(255,255,255,0.06);
+            background: rgba(255,255,255,0.1);
             color: var(--text-light);
-            border: 1px solid rgba(255,255,255,0.12);
+            border: 2px solid rgba(255,255,255,0.2);
             border-radius: 12px;
-            padding: 0.75rem 1rem;
+            padding: 1rem 1.25rem;
             outline: none;
+            font-size: 1.1rem;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
         }
-        .sort-select {
-            background: rgba(255,255,255,0.06);
-            color: var(--text-light);
-            border: 1px solid rgba(255,255,255,0.12);
-            border-radius: 12px;
-            padding: 0.75rem 1rem;
-            outline: none;
+        .search-input:focus {
+            border-color: rgba(255,255,255,0.4);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            transform: translateY(-1px);
+        }
+        .search-input::placeholder {
+            color: rgba(255,255,255,0.6);
         }
 
         .section-title {
@@ -233,6 +238,11 @@
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
             margin-bottom: 3rem;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .products-container.loading {
+            opacity: 0.7;
         }
 
         .product-item {
@@ -348,11 +358,17 @@
             --text-muted: #5b6472;
         }
         body.light .icon-btn,
-        body.light .search-input,
-        body.light .sort-select {
-            background: rgba(0,0,0,0.04);
+        body.light .search-input {
+            background: rgba(0,0,0,0.06);
             color: var(--text-light);
-            border-color: rgba(0,0,0,0.08);
+            border-color: rgba(0,0,0,0.15);
+        }
+        body.light .search-input:focus {
+            border-color: rgba(0,0,0,0.25);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+        }
+        body.light .search-input::placeholder {
+            color: rgba(0,0,0,0.5);
         }
         body.light .product-item {
             box-shadow: 0 8px 24px rgba(11,18,32,0.06);
@@ -403,6 +419,37 @@
 
         .product-item.out-of-stock {
             opacity: 0.8;
+        }
+
+        .no-results {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 300px;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .no-results-content {
+            text-align: center;
+            max-width: 400px;
+        }
+
+        .no-results-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.7;
+        }
+
+        .no-results h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-light);
+        }
+
+        .no-results p {
+            color: var(--text-dim);
+            line-height: 1.6;
         }
 
         .product-item-header {
@@ -1582,14 +1629,7 @@
             <section class="products-grid" id="productsGrid">
                 <h2 class="section-title">Tài Khoản Premium Chất Lượng Cao</h2>
                 <div class="products-toolbar">
-                    <input id="searchInput" class="search-input" placeholder="Tìm sản phẩm..." />
-                    <select id="sortSelect" class="sort-select">
-                        <option value="relevance">Sắp xếp: Phù hợp</option>
-                        <option value="price-asc">Giá tăng dần</option>
-                        <option value="price-desc">Giá giảm dần</option>
-                        <option value="name-asc">Tên A-Z</option>
-                        <option value="name-desc">Tên Z-A</option>
-                    </select>
+                    <input id="searchInput" class="search-input" placeholder="Tìm sản phẩm... 🔍" />
                 </div>
                 <div class="products-container" id="productsContainer">
                     <!-- Sản phẩm sẽ được tạo bởi JavaScript -->
@@ -1903,6 +1943,9 @@
         function createProductsGrid() {
             const container = document.getElementById('productsContainer');
 
+            // Add fade effect
+            container.classList.add('loading');
+
             // Render skeletons while preparing data (small UX improvement)
             container.innerHTML = '';
             const skeletonCount = 6;
@@ -1918,34 +1961,45 @@
                 container.appendChild(s);
             }
 
-            // Prepare data with filtering and sorting
+            // Prepare data with filtering
             const query = (document.getElementById('searchInput')?.value || '').trim().toLowerCase();
-            const sort = document.getElementById('sortSelect')?.value || 'relevance';
 
             let entries = Object.entries(PRODUCTS);
+            let hasResults = true;
 
             if (query) {
-                entries = entries.filter(([_, p]) => {
-                    const hay = `${p.name} ${p.description} ${(p.features||[]).join(' ')}`.toLowerCase();
-                    return hay.includes(query);
+                // Filter products based on search query
+                entries = entries.filter(([_, product]) => {
+                    // Search in product name (primary search field)
+                    const productName = product.name.toLowerCase();
+                    
+                    // Simple substring search - if query exists anywhere in product name
+                    return productName.includes(query);
                 });
-            }
-
-            const getMinPrice = (p) => Math.min(...Object.values(p.prices).map(x => x.price));
-
-            if (sort === 'price-asc') {
-                entries.sort((a, b) => getMinPrice(a[1]) - getMinPrice(b[1]));
-            } else if (sort === 'price-desc') {
-                entries.sort((a, b) => getMinPrice(b[1]) - getMinPrice(a[1]));
-            } else if (sort === 'name-asc') {
-                entries.sort((a, b) => a[1].name.localeCompare(b[1].name, 'vi'));
-            } else if (sort === 'name-desc') {
-                entries.sort((a, b) => b[1].name.localeCompare(a[1].name, 'vi'));
+                
+                // Check if we have results
+                hasResults = entries.length > 0;
             }
 
             // Defer real render slightly to allow skeleton flash
             setTimeout(() => {
                 container.innerHTML = '';
+                
+                // If no results found, show message
+                if (!hasResults && query) {
+                    const noResultsDiv = document.createElement('div');
+                    noResultsDiv.className = 'no-results';
+                    noResultsDiv.innerHTML = `
+                        <div class="no-results-content">
+                            <div class="no-results-icon">🔍</div>
+                            <h3>Không tìm thấy sản phẩm phù hợp</h3>
+                            <p>Hãy thử từ khóa khác hoặc xóa bộ lọc để xem tất cả sản phẩm</p>
+                        </div>
+                    `;
+                    container.appendChild(noResultsDiv);
+                    return;
+                }
+                
                 entries.forEach(([key, product]) => {
                 const productItem = document.createElement('div');
                 const isOut = !product.stock;
@@ -1987,6 +2041,9 @@
 
                     container.appendChild(productItem);
                 });
+                
+                // Remove loading state to complete fade effect
+                container.classList.remove('loading');
             }, 200);
         }
 
@@ -2321,18 +2378,14 @@
                 });
             }
 
-            // Search + sort listeners
+            // Search listeners
             const searchInput = document.getElementById('searchInput');
-            const sortSelect = document.getElementById('sortSelect');
             if (searchInput) {
                 let searchDebounce;
                 searchInput.addEventListener('input', () => {
                     clearTimeout(searchDebounce);
-                    searchDebounce = setTimeout(() => createProductsGrid(), 180);
+                    searchDebounce = setTimeout(() => createProductsGrid(), 300);
                 });
-            }
-            if (sortSelect) {
-                sortSelect.addEventListener('change', createProductsGrid);
             }
             
             // Cập nhật sản phẩm ban đầu (ẩn)
