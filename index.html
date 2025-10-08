@@ -96,6 +96,30 @@
             animation: fadeInDown 0.8s ease-out;
         }
 
+        /* Header actions (theme toggle) */
+        .header-actions {
+            position: absolute;
+            top: 1.25rem;
+            right: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .icon-btn {
+            background: rgba(255,255,255,0.08);
+            color: var(--text-light);
+            border: 1px solid rgba(255,255,255,0.15);
+            padding: 0.5rem 0.75rem;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+        }
+        .icon-btn:hover {
+            transform: translateY(-2px);
+            background: rgba(255,255,255,0.12);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+        }
+
         @keyframes fadeInDown {
             from {
                 opacity: 0;
@@ -166,6 +190,30 @@
         /* Products Grid */
         .products-grid {
             grid-column: 1 / -1;
+        }
+
+        /* Toolbar above products */
+        .products-toolbar {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 1rem;
+            margin: 0 0 1.5rem 0;
+        }
+        .search-input {
+            background: rgba(255,255,255,0.06);
+            color: var(--text-light);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            outline: none;
+        }
+        .sort-select {
+            background: rgba(255,255,255,0.06);
+            color: var(--text-light);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            outline: none;
         }
 
         .section-title {
@@ -260,12 +308,61 @@
             transform: scaleX(1);
         }
 
+        /* Skeleton cards */
+        .product-skeleton {
+            background: rgba(255,255,255,0.04);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(255,255,255,0.08);
+            overflow: hidden;
+            position: relative;
+        }
+        .skeleton-line {
+            height: 14px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.08) 25%, rgba(255,255,255,0.16) 37%, rgba(255,255,255,0.08) 63%);
+            background-size: 400% 100%;
+            border-radius: 8px;
+            animation: shimmer 1.2s ease-in-out infinite;
+        }
+        .skeleton-line.lg { height: 22px; }
+        .skeleton-line.md { height: 16px; }
+        .skeleton-line + .skeleton-line { margin-top: 12px; }
+        @keyframes shimmer {
+            0% { background-position: 100% 0; }
+            100% { background-position: 0 0; }
+        }
+
         .product-item:hover {
             transform: translateY(-10px) scale(1.02);
             box-shadow: 0 25px 50px rgba(139, 92, 246, 0.3), 
                         0 10px 40px rgba(236, 72, 153, 0.2),
                         0 0 30px rgba(59, 130, 246, 0.2);
             border-color: var(--primary-color);
+        }
+
+        /* Light theme overrides */
+        body.light {
+            --secondary-color: #f6f7fb;
+            --card-bg: #ffffff;
+            --text-light: #0b1220;
+            --text-muted: #5b6472;
+        }
+        body.light .icon-btn,
+        body.light .search-input,
+        body.light .sort-select {
+            background: rgba(0,0,0,0.04);
+            color: var(--text-light);
+            border-color: rgba(0,0,0,0.08);
+        }
+        body.light .product-item {
+            box-shadow: 0 8px 24px rgba(11,18,32,0.06);
+            border-color: rgba(11,18,32,0.06);
+        }
+        body.light .section-title { filter: none; }
+
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            * { animation: none !important; transition: none !important; }
         }
 
         /* Stock Badge */
@@ -1473,6 +1570,9 @@
 <body>
     <div class="container">
         <header>
+            <div class="header-actions">
+                <button id="themeToggleBtn" class="icon-btn" aria-label="Đổi giao diện">🌓</button>
+            </div>
             <div class="logo">HASHOPTECH</div>
             <div class="tagline">Tài khoản công nghệ chất lượng cao - Giao dịch nhanh chóng</div>
         </header>
@@ -1481,6 +1581,16 @@
             <!-- Danh sách sản phẩm -->
             <section class="products-grid" id="productsGrid">
                 <h2 class="section-title">Tài Khoản Premium Chất Lượng Cao</h2>
+                <div class="products-toolbar">
+                    <input id="searchInput" class="search-input" placeholder="Tìm sản phẩm..." />
+                    <select id="sortSelect" class="sort-select">
+                        <option value="relevance">Sắp xếp: Phù hợp</option>
+                        <option value="price-asc">Giá tăng dần</option>
+                        <option value="price-desc">Giá giảm dần</option>
+                        <option value="name-asc">Tên A-Z</option>
+                        <option value="name-desc">Tên Z-A</option>
+                    </select>
+                </div>
                 <div class="products-container" id="productsContainer">
                     <!-- Sản phẩm sẽ được tạo bởi JavaScript -->
                 </div>
@@ -1792,9 +1902,51 @@
         // Tạo danh sách sản phẩm
         function createProductsGrid() {
             const container = document.getElementById('productsContainer');
-            container.innerHTML = '';
 
-            Object.entries(PRODUCTS).forEach(([key, product]) => {
+            // Render skeletons while preparing data (small UX improvement)
+            container.innerHTML = '';
+            const skeletonCount = 6;
+            for (let i = 0; i < skeletonCount; i++) {
+                const s = document.createElement('div');
+                s.className = 'product-skeleton';
+                s.innerHTML = `
+                    <div class="skeleton-line lg" style="width: 60%"></div>
+                    <div class="skeleton-line" style="width: 40%"></div>
+                    <div class="skeleton-line md" style="width: 90%; margin-top: 18px"></div>
+                    <div class="skeleton-line" style="width: 80%"></div>
+                    <div class="skeleton-line" style="width: 70%"></div>`;
+                container.appendChild(s);
+            }
+
+            // Prepare data with filtering and sorting
+            const query = (document.getElementById('searchInput')?.value || '').trim().toLowerCase();
+            const sort = document.getElementById('sortSelect')?.value || 'relevance';
+
+            let entries = Object.entries(PRODUCTS);
+
+            if (query) {
+                entries = entries.filter(([_, p]) => {
+                    const hay = `${p.name} ${p.description} ${(p.features||[]).join(' ')}`.toLowerCase();
+                    return hay.includes(query);
+                });
+            }
+
+            const getMinPrice = (p) => Math.min(...Object.values(p.prices).map(x => x.price));
+
+            if (sort === 'price-asc') {
+                entries.sort((a, b) => getMinPrice(a[1]) - getMinPrice(b[1]));
+            } else if (sort === 'price-desc') {
+                entries.sort((a, b) => getMinPrice(b[1]) - getMinPrice(a[1]));
+            } else if (sort === 'name-asc') {
+                entries.sort((a, b) => a[1].name.localeCompare(b[1].name, 'vi'));
+            } else if (sort === 'name-desc') {
+                entries.sort((a, b) => b[1].name.localeCompare(a[1].name, 'vi'));
+            }
+
+            // Defer real render slightly to allow skeleton flash
+            setTimeout(() => {
+                container.innerHTML = '';
+                entries.forEach(([key, product]) => {
                 const productItem = document.createElement('div');
                 const isOut = !product.stock;
                 productItem.className = 'product-item' + (isOut ? ' out-of-stock' : '');
@@ -1833,8 +1985,9 @@
                     </button>
                 `;
 
-                container.appendChild(productItem);
-            });
+                    container.appendChild(productItem);
+                });
+            }, 200);
         }
 
         // Chọn sản phẩm
@@ -2153,6 +2306,34 @@
             
             // Tạo danh sách sản phẩm
             createProductsGrid();
+            // Theme toggle
+            const THEME_KEY = 'hashop_theme';
+            const themeBtn = document.getElementById('themeToggleBtn');
+            const savedTheme = localStorage.getItem(THEME_KEY);
+            if (savedTheme === 'light') {
+                document.body.classList.add('light');
+            }
+            if (themeBtn) {
+                themeBtn.addEventListener('click', () => {
+                    document.body.classList.toggle('light');
+                    const isLight = document.body.classList.contains('light');
+                    localStorage.setItem(THEME_KEY, isLight ? 'light' : 'dark');
+                });
+            }
+
+            // Search + sort listeners
+            const searchInput = document.getElementById('searchInput');
+            const sortSelect = document.getElementById('sortSelect');
+            if (searchInput) {
+                let searchDebounce;
+                searchInput.addEventListener('input', () => {
+                    clearTimeout(searchDebounce);
+                    searchDebounce = setTimeout(() => createProductsGrid(), 180);
+                });
+            }
+            if (sortSelect) {
+                sortSelect.addEventListener('change', createProductsGrid);
+            }
             
             // Cập nhật sản phẩm ban đầu (ẩn)
             updateProductDisplay();
