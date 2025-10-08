@@ -950,29 +950,33 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            box-shadow: 0 4px 20px rgba(0, 123, 255, 0.4);
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                        background 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             z-index: 1001;
+            will-change: transform, opacity;
+            transform: translateZ(0);
         }
 
         .fab-main:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 25px rgba(0, 123, 255, 0.6);
+            transform: scale(1.08) translateZ(0);
         }
 
         .fab-main.active {
-            transform: rotate(45deg);
+            transform: rotate(45deg) scale(1.08) translateZ(0);
             background: linear-gradient(135deg, #dc3545, #c82333);
         }
 
         .fab-icon {
             color: white;
-            transition: all 0.3s ease;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform, opacity;
+            transform: translateZ(0);
         }
 
         .fab-main.active .fab-icon {
-            transform: rotate(-45deg);
+            transform: rotate(-45deg) translateZ(0);
         }
 
         .fab-options {
@@ -997,10 +1001,12 @@
             bottom: 0;
             right: 0;
             opacity: 0;
-            transform: scale(0);
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.3);
+            transform: translateY(0) scale(0.6) translateZ(0);
+            transition: opacity 0.32s cubic-bezier(0.4, 0, 0.2, 1),
+                        transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
             text-decoration: none;
+            will-change: transform, opacity;
         }
 
         .fab-option img {
@@ -1023,29 +1029,26 @@
 
         .fab-options.active .fab-option {
             opacity: 1;
-            transform: scale(1);
+            transform: scale(1) translateZ(0);
         }
 
         .fab-options.active .fab-option:nth-child(1) {
-            bottom: 80px;
-            right: 8px;
-            transition-delay: 0.1s;
+            transform: translateY(-70px) scale(1) translateZ(0);
+            transition-delay: 0.08s;
         }
 
         .fab-options.active .fab-option:nth-child(2) {
-            bottom: 140px;
-            right: 8px;
-            transition-delay: 0.2s;
+            transform: translateY(-130px) scale(1) translateZ(0);
+            transition-delay: 0.16s;
         }
 
         .fab-options.active .fab-option:nth-child(3) {
-            bottom: 200px;
-            right: 8px;
-            transition-delay: 0.3s;
+            transform: translateY(-190px) scale(1) translateZ(0);
+            transition-delay: 0.24s;
         }
 
         .fab-option:hover {
-            transform: scale(1.1);
+            transform: scale(1.12) translateZ(0);
         }
 
         /* QR Payment Modal */
@@ -2168,20 +2171,14 @@
             const fabOptions = document.getElementById('fabOptions');
             let isOpen = false;
 
-            fabMain.addEventListener('click', function() {
+            fabMain.addEventListener('click', () => {
                 isOpen = !isOpen;
-                
-                if (isOpen) {
-                    fabMain.classList.add('active');
-                    fabOptions.classList.add('active');
-                } else {
-                    fabMain.classList.remove('active');
-                    fabOptions.classList.remove('active');
-                }
+                fabMain.classList.toggle('active', isOpen);
+                fabOptions.classList.toggle('active', isOpen);
             });
 
             // Đóng FAB khi click bên ngoài
-            document.addEventListener('click', function(e) {
+            document.addEventListener('click', (e) => {
                 if (!e.target.closest('.fab-container') && isOpen) {
                     isOpen = false;
                     fabMain.classList.remove('active');
