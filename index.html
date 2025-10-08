@@ -1673,6 +1673,11 @@
                 const minPrice = Math.min(...priceValues);
                 const maxPrice = Math.max(...priceValues);
                 
+                // Hiển thị giá
+                const priceDisplay = minPrice === maxPrice 
+                    ? formatPrice(minPrice) 
+                    : `Từ ${formatPrice(minPrice)} - ${formatPrice(maxPrice)}`;
+                
                 const stockHtml = `
                     <span class="stock-badge ${isOut ? 'out' : 'in'}">
                         ${isOut ? '❌ Hết hàng' : `✓ Còn ${product.stock}`}
@@ -1684,7 +1689,7 @@
                         <div class="product-item-icon">${renderIcon(product.icon)}</div>
                         <div class="product-item-info">
                             <h3>${product.name}</h3>
-                            <div class="product-item-price">Từ ${formatPrice(minPrice)} - ${formatPrice(maxPrice)}</div>
+                            <div class="product-item-price">${priceDisplay}</div>
                         </div>
                     </div>
                     <div class="product-item-desc">${product.description}</div>
